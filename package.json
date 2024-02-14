@@ -1,0 +1,15 @@
+{
+  "name": "botds",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index2.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "aios": "^1.0.1",
+    "discord.js": "^14.14.1"
+  }
+}
