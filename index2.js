@@ -102,5 +102,5 @@ async function choose(message, args) {
     }
 }
 
-const token = "MTIwNTkyNzc1Nzk1MTc5NTMwMA.G3MY4v.GYjbAe7ot9d5ZCUvSKcPOWmWlZ2X668eWwGbAU"; //token
+const token = "acá"; //token
 client.login(token);
