@@ -64,7 +64,11 @@ async function execute(message, args) {
     }
 }
 function listar(message, args) {
-    database.each(opcion => message.channel.send(`- ${opcion} \n`));
+    let cats = [] 
+    for (let index in database) {
+        database[index].forEach(option => cats.push(`${index} - ${option}`));
+    }
+    message.channel.send(cats.join('\n'));
 }
 async function choose(message, args) {
     console.log('Eligiendo imagen', args);
@@ -106,5 +110,5 @@ async function choose(message, args) {
     }
 }
 
-const token = "acá"; //token
+const token = "MTIwNTkyNzc1Nzk1MTc5NTMwMA.GVDWX7.vJkZXSG8QNI5_fUlFo0byVBoYqDsezpeypGVRM"; //token
 client.login(token);
