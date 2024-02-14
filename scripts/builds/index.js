@@ -38,6 +38,8 @@ client.on('messageCreate', async (message) => {
         execute(message, args);
     } else if (command === 'mostrar') {
         choose(message, args);
+    } else if (command === 'listar') {
+        listar(message, args);
     } else {
         message.channel.send('Juani es un pelotudo y no codeo tu comando');
     }
@@ -61,7 +63,9 @@ async function execute(message, args) {
         message.channel.send(`Hubo un error: ${error.message}`);
     }
 }
-
+function listar(message, args) {
+    database.each(opcion => message.channel.send(`- ${opcion} \n`));
+}
 async function choose(message, args) {
     console.log('Eligiendo imagen', args);
 
