@@ -1,9 +1,9 @@
 const { Client, GatewayIntentBits } = require('discord.js');
-const axios = require('axios'); //No se si se usa esto, creo que no
+const axios = require('axios'); 
 
 const client = new Client({
     intents: [
-        GatewayIntentBits.Guilds,
+        GatewayIntentBits.Guilds,   //"intenciones" del bot
         GatewayIntentBits.GuildMessages,
         GatewayIntentBits.MessageContent,
         GatewayIntentBits.GuildMembers,
@@ -13,13 +13,13 @@ const client = new Client({
 
 const prefix = '$';
 
-// Simulación de la db
+// DB de indice
 const database = {
-    "Ava-Buff": ["Arco.jpg", "Corta-Curas.jpg", "Enigmatico.jpg", "Flamigero.jpg", "Frost.jpg", "Healer-Party.jpg", "Main-Healer.jpg", "Main-Tank.jpg", "Monje-Negro.jpg", "Prisma.jpg", "SC.jpg", "Set-Skip.jpg", "xBow.jpg"],
-    "Ava-Full": ["1H-Arcano.jpg", "Arco.jpg", "Flamigero.jpg", "Frost.jpg", "Gran-Arcano.jpg", "Healer-Party1.jpg", "Healer-Party2.jpg", "IronRoot.jpg", "Main-Heal.jpg", "Main-Tank.jpg", "Off-Tank.jpg", "Rompe-Reinos.jpg", "SC-DPS.jpg", "SC-SUPP.jpg", "xBow.jpg"],
-    "Gank": ["Ballesta-OneShot.jpg", "Concedemuertes.jpg", "Doble-Daga.jpg", "Doble-Filo.jpg", "Fuego-1H.jpg", "Garza.jpg", "Gran-Arcano.jpg", "Grito-Gelido.jpg", "Lanza.jpg", "Martillo-de-Forja.jpg", "Maza.jpg", "Saetas.jpg", "Susurrante.jpg", "Vara-Ava.jpg"],
-    "WB": ["Healers.jpg", "Pierce.jpg", "RDPS.jpg", "Tanques.jpg", "Utilidades.jpg"],
-    "ZvZ": ["ZvZ.jpg"]
+    "ava-buff": ["arco.jpg", "corta-curas.jpg", "enigmatico.jpg", "flamigero.jpg", "frost.jpg", "healer-party.jpg", "main-healer.jpg", "main-tank.jpg", "monje-negro.jpg", "prisma.jpg", "sc.jpg", "set-skip.jpg", "xbow.jpg"],
+    "ava-full": ["1h-arcano.jpg", "arco.jpg", "flamigero.jpg", "frost.jpg", "gran-arcano.jpg", "healer-party1.jpg", "healer-party2.jpg", "ironroot.jpg", "main-heal.jpg", "main-tank.jpg", "off-tank.jpg", "rompe-reinos.jpg", "sc-dps.jpg", "sc-supp.jpg", "xbow.jpg"],
+    "gank": ["ballesta-oneshot.jpg", "concedemuertes.jpg", "doble-daga.jpg", "doble-filo.jpg", "fuego-1h.jpg", "garza.jpg", "gran-arcano.jpg", "grito-gelido.jpg", "lanza.jpg", "martillo-de-forja.jpg", "maza.jpg", "saetas.jpg", "susurrante.jpg", "vara-ava.jpg"],
+    "wb": ["healers.jpg", "pierce.jpg", "rdps.jpg", "tanques.jpg", "utilidades.jpg"],
+    "zvz": ["zvz.jpg"]
 };
 
 client.on('error', console.error);
@@ -33,7 +33,7 @@ client.on('messageCreate', async (message) => {
     console.log('Mensaje recibido:', message.content);
     const args = message.content.slice(prefix.length).split(' ');
     const command = args.shift().toLowerCase();
-
+    //Comandos
     if (command === 'builds') {
         execute(message, args);
     } else if (command === 'mostrar') {
@@ -74,10 +74,10 @@ async function choose(message, args) {
     console.log('Eligiendo imagen', args);
 
     try {
-        console.log('Argumentos completos:', args);
+        console.log('Argumentos completos:', args.toLowerCase());
 
-        const categoria = args[0]; // La categoría es el primer elemento 
-        let imagen = args[1]; // El nombre de la imagen es el segundo elemento 
+        const categoria = args[0].toLowerCase(); // La categoría es el primer elemento 
+        let imagen = args[1].toLowerCase(); // El nombre de la imagen es el segundo elemento 
         
         console.log('Categoría:', categoria);
         console.log('Imagen:', imagen);
