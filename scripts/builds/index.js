@@ -38,8 +38,10 @@ client.on('messageCreate', async (message) => {
         execute(message, args);
     } else if (command === 'mostrar') {
         choose(message, args);
-    } else if (command === 'listar') {
-        listar(message, args);
+    } else if (command === 'cats') {
+        listCats(message, args);
+    } else if (command === 'all') {
+        listAll(message, args);
     } else {
         message.channel.send('Juani es un pelotudo y no codeo tu comando');
     }
@@ -63,18 +65,25 @@ async function execute(message, args) {
         message.channel.send(`Hubo un error: ${error.message}`);
     }
 }
-function listar(message, args) {
+function listCats(message, args) {
     let cats = [] 
-    for (let index in database) {
-        database[index].forEach(option => cats.push(`${index} - ${option}`));
+    for (const index in database) {
+        cats.push(`- ` + index);
     }
-    message.channel.send(cats.join('\n'));
+    message.channel.send("Las categorias disponibles son: \n" + cats.join('\n'));
+}
+function listAll(message, args) {
+    let all = [] 
+    for (const index in database) {
+        database[index].forEach(option => all.push(`${`- `} ${index} - ${option}`));
+    }
+    message.channel.send("Las categorias y opciones disponibles son: \n" + all.join('\n'));
 }
 async function choose(message, args) {
     console.log('Eligiendo imagen', args);
 
     try {
-        console.log('Argumentos completos:', args.toLowerCase());
+        console.log('Argumentos completos:', args);
 
         const categoria = args[0].toLowerCase(); // La categoría es el primer elemento 
         let imagen = args[1].toLowerCase(); // El nombre de la imagen es el segundo elemento 
