@@ -12,6 +12,9 @@ const client = new Client({
 });
 
 const prefix = '$';
+const CHANNEL_ID = '936708400945971233';
+const HOUR_TO_SEND = 10; // Hora 
+const MINUTE_TO_SEND = 30; // Minutos
 
 // DB de indice
 const database = {
@@ -24,8 +27,27 @@ const database = {
 
 client.on('error', console.error);
 
-client.on('ready', () => {
-    console.log('¡Bot listo!');
+client.on('ready', async () => {
+    console.log('¡El bot está listo!');
+
+    // Obtener el canal por ID
+    const channel = await client.channels.fetch(CHANNEL_ID);
+
+    // Función para enviar mensaje
+    const sendMessage = () => {
+        // Obtener hora y minutos actuales
+        const currentHour = new Date().getHours();
+        const currentMinute = new Date().getMinutes();
+        
+        // Verificacion
+        if (currentHour === HOUR_TO_SEND && currentMinute === MINUTE_TO_SEND) {
+            // Enviar mensaje 
+            channel.send('@here Desde el staff del gremio les deseamos buenos dias a todos \nRecuerden que nadie del staff les va a pedir por susurro que les presten su mamut u algun otro item de alto valor \nEviten caer en estafas :3 ');
+        }
+    };
+
+    // Verificar la hora cada minuto
+    setInterval(sendMessage, 60000); 
 });
 
 client.on('messageCreate', async (message) => {
