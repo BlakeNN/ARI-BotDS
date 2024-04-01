@@ -18,7 +18,8 @@ const minutos = 30; // Minutos
 const id_canal2 = '1219801234270060596';
 const hora2 = 21; // Hora2 
 const minutos2 = 59; // Minutos2 
-// DB de indice
+
+// DB de las imgs
 const database = {
     "ava-buff": ["arco.jpg", "corta-curas.jpg", "enigmatico.jpg", "flamigero.jpg", "frost.jpg", "healer-party.jpg", "main-healer.jpg", "main-tank.jpg", "monje-negro.jpg", "prisma.jpg", "sc.jpg", "set-skip.jpg", "xbow.jpg"],
     "ava-full": ["1h-arcano.jpg", "arco.jpg", "flamigero.jpg", "frost.jpg", "gran-arcano.jpg", "healer-party1.jpg", "healer-party2.jpg", "ironroot.jpg", "main-heal.jpg", "main-tank.jpg", "off-tank.jpg", "rompe-reinos.jpg", "sc-dps.jpg", "sc-supp.jpg", "xbow.jpg"],
@@ -27,11 +28,12 @@ const database = {
     "zvz": ["zvz.jpg"], 
     "pvp": ["pvp.jpg"]
 };
+//DB de la Blacklist
 let blacklist = ["razieck", "tryhardocasuall", "curamectm", "rodrigo98", "masterbum", "elsaid", "nandinblack", "haromathieu", "xchino12", "yamrtekudasai", "lildeath", "mrpeco", "zeusgaming", "kekles", "guawe", "kitten", "saethary", "easyone", "christian287", "razhot", "masterbun", "vampirodoidao", "ano1998", "ano1988", "mestrerafa33", "carrasco666", "mayoperalta", "heroargentina", "xexenco", "zitarex", "nashungho", "xwxenko", "tokitoxk", "de1v1d", "zawkl", "rosamelano123", "darkclementy", "dovad", "davruk", "wanter20", "gamacu", "xlengo", "elmechs", "jugodelucuma", "argtomas", "maup1", "nrnanito", "astaroth18", "xhakaa", "dalxe", "reneperez", "relivex", "zsend", "xdariusx", "lauty48", "xsautox", "xtaukox", "imprudence", "aeav", "noodleg", "morph33us", "therippertsa", "haromathieu", "kore52", "sluxs", "zoemm7", "eljerry", "jappipapu", "tknobi", "unno", "soyosio", "clotario", "solovinowe", "mataviejitas2mil", "manuchiliz", "garuu18", "fioreyo", "yomihira", "xeroxernes", "nachoguaca10", "shezwyk", "rlam18", "cotox3d", "topsito1", "tdxxxx", "lordleyendari", "villuca96", "merequetengue", "snoopywoow", "djwtech", "nairev", "pacsz", "maverickz121", "elmerlusa", "elmacho25", "holydps", "mateogox", "moshoxxx"];
 
 client.on('error', console.error);
 
-client.on('ready', async () => {
+client.on('ready', async () => { //Funcion para mandar los mensajes diarios
     console.log('¡El bot está listo!');
     // Obtener el canal por ID
     const channel = await client.channels.fetch(id_canal);
@@ -44,7 +46,7 @@ client.on('ready', async () => {
         // Verificacion
         if (currentHour === hora && currentMinute === minutos) {
             // Enviar mensaje 
-            channel.send('||@here ||\n**Desde el staff del gremio les deseamos buenos días a todos **\n:small_blue_diamond:Recuerden que nadie del staff les va a pedir por susurro que les presten su mamut o algún otro ítem de alto valor\n** Eviten caer en estafas ** \n:small_blue_diamond:También recordarles que se lean el canal de <#936713325348270121>, desconocer las mismas no los hace inocentes si incumplen alguna \n** Buena suerte a todos **');
+            channel.send('||@here ||\n**Desde el staff del gremio les deseamos buenos días a todos **\n:small_blue_diamond:Recuerden que nadie del staff les va a pedir por susurro que les presten su mamut o algún otro ítem de alto valor\n** Eviten caer en estafas ** \n:small_blue_diamond:También recordarles que se lean el canal de <#936713325348270121>, en el mismo encontraran las normas del **Gremio** y las de la **Alianza** \n** Buena suerte a todos **');
         }
         //--2 Obtener hora y minutos actuales
         const currentHour2 = new Date().getHours();
@@ -82,13 +84,13 @@ client.on('messageCreate', async (message) => {
     } else if (command == 'bs') {
         bs(message, args);
     } else if (command == 'del') {
-        listDel(message, args)
+        listDel(message, args);
     } else {
-        message.channel.send('Juani es un pelotudo y no codeo tu comando');
+        message.channel.send('Juani es un pelotudo y no codeo tu comando, o lo estas poniendo mal y sos mas pelotudo que Juani');
     }
 });
 
-async function execute(message, args) {
+async function execute(message, args) { //$builds
     console.log('Buscando imagen', args);
     try {
         // Obtener categoria
@@ -105,21 +107,21 @@ async function execute(message, args) {
         message.channel.send(`Hubo un error: ${error.message}`);
     }
 }
-function listCats(message, args) {
+function listCats(message, args) { //$cats
     let cats = [] 
     for (const index in database) {
         cats.push(`- ` + index);
     }
     message.channel.send("Las categorias disponibles son: \n" + cats.join('\n'));
 }
-function listAll(message, args) {
+function listAll(message, args) { //$all
     let all = [] 
     for (const index in database) {
         database[index].forEach(option => all.push(`${`- `} ${index} - ${option}`));
     }
     message.channel.send("Las categorias y opciones disponibles son: \n" + all.join('\n'));
 }
-function horario(message, args) {
+function horario(message, args) { //$hora
     // Hora UTC
     const horaUTC = new Date();
     // Hora Argentina (UTC -3)
@@ -136,7 +138,7 @@ function horario(message, args) {
     message.channel.send("Son las: \n" + horaFormatoARG + "hs en :flag_ar: \n" + horaFormatoESP + "hs en :flag_es: \n" + horaFormatoUTC + "UTC");
 }
 
-async function choose(message, args) {
+async function choose(message, args) { //$mostrar
     console.log('Eligiendo imagen', args);
 
     try {
@@ -168,14 +170,14 @@ async function choose(message, args) {
             });
             console.log(response);
         } else {
-            message.channel.send("Categoría o imagen no encontrada.");
+            message.channel.send(`Categoría o imagen no encontrada.\n Poné bien el comando salame ($mostrar "categoria" "build")`);
         }
     } catch (error) {
         console.error(error);
-        message.channel.send(`Hubo un error: ${error.message}`);
+        message.channel.send(`Hubo un error: ${error.message}\n Poné bien el comando salame ($mostrar "categoria" "build")`);
     }
 }
-async function listSearch(message, args) {
+async function listSearch(message, args) { //$s
     console.log('Buscando en la blacklist', args);
     try {
         // Obtener categoria
@@ -190,7 +192,7 @@ async function listSearch(message, args) {
         message.channel.send(`Hubo un error: ${error.message}`);
     }
 }
-async function listAdd(message, args) {
+async function listAdd(message, args) { //$blacklist
     console.log("Añadiendo player a la blacklist", args);
     const member = args[0].toLowerCase();
     if (blacklist.includes(member)) {
@@ -207,11 +209,11 @@ async function listAdd(message, args) {
         logChannel.send(args[0] + " " + motivoCon);
     }
 }
-function bs(message, args) {
+function bs(message, args) { //$bs
     const players = blacklist.map(player => `- ${player}`).join('\n');
     message.channel.send("La blacklit actual es:\n" + players);
 }
-function listDel(message, args) {
+function listDel(message, args) { //$del
     const name = args[0].toLowerCase();
     if (blacklist.includes(name)) {
         blacklist = blacklist.filter(player => player !== name);
