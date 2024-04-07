@@ -44,9 +44,6 @@ const database = {
     "zvz": ["zvz.jpg"],
     "pvp": ["pvp.jpg"]
 };
-//DB de la Blacklist
-let blacklist = ["razieck", "tryhardocasuall", "curamectm", "rodrigo98", "masterbum", "elsaid", "nandinblack", "haromathieu", "xchino12", "yamrtekudasai", "lildeath", "mrpeco", "zeusgaming", "kekles", "guawe", "kitten", "saethary", "easyone", "christian287", "razhot", "masterbun", "vampirodoidao", "ano1998", "ano1988", "mestrerafa33", "carrasco666", "mayoperalta", "heroargentina", "xexenco", "zitarex", "nashungho", "xwxenko", "tokitoxk", "de1v1d", "zawkl", "rosamelano123", "darkclementy", "dovad", "davruk", "wanter20", "gamacu", "xlengo", "elmechs", "jugodelucuma", "argtomas", "maup1", "nrnanito", "astaroth18", "xhakaa", "dalxe", "reneperez", "relivex", "zsend", "xdariusx", "lauty48", "xsautox", "xtaukox", "imprudence", "aeav", "noodleg", "morph33us", "therippertsa", "haromathieu", "kore52", "sluxs", "zoemm7", "eljerry", "jappipapu", "tknobi", "unno", "soyosio", "clotario", "solovinowe", "mataviejitas2mil", "manuchiliz", "garuu18", "fioreyo", "yomihira", "xeroxernes", "nachoguaca10", "shezwyk", "rlam18", "cotox3d", "topsito1", "tdxxxx", "lordleyendari", "villuca96", "merequetengue", "snoopywoow", "djwtech", "nairev", "pacsz", "maverickz121", "elmerlusa", "elmacho25", "holydps", "mateogox", "moshoxxx", "lamuditavirgen", "pechofrioxd"];
-
 client.on('error', console.error);
 
 client.on('ready', async () => { //Funcion para mandar los mensajes diarios
