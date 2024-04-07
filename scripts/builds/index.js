@@ -1,6 +1,22 @@
 const { Client, GatewayIntentBits } = require('discord.js');
-const axios = require('axios'); 
+const axios = require('axios');
+const mysql = require('mysql');
+// Credenciales MySQL
+const connection = mysql.createConnection({
+    host: 'b5mnztzfpyftahkfjbzu-mysql.services.clever-cloud.com',
+    user: 'uyygja9tskwubcgc',
+    password: 'mKF7H3tpyyumc1cZSNFO',
+    database: 'b5mnztzfpyftahkfjbzu'
+});
+// Coneccion a la base de datos
+connection.connect((error) => {
+    if (error) {
+        console.error('Error al conectar a la base de datos: ' + error.stack);
+        return;
+    }
 
+    console.log('Conexión establecida correctamente');
+});
 const client = new Client({
     intents: [
         GatewayIntentBits.Guilds,   //"intenciones" del bot
@@ -25,11 +41,11 @@ const database = {
     "ava-full": ["1h-arcano.jpg", "arco.jpg", "flamigero.jpg", "frost.jpg", "gran-arcano.jpg", "healer-party1.jpg", "healer-party2.jpg", "ironroot.jpg", "main-heal.jpg", "main-tank.jpg", "off-tank.jpg", "rompe-reinos.jpg", "sc-dps.jpg", "sc-supp.jpg", "xbow.jpg"],
     "gank": ["ballesta-oneshot.jpg", "concedemuertes.jpg", "doble-daga.jpg", "doble-filo.jpg", "fuego-1h.jpg", "garza.jpg", "gran-arcano.jpg", "grito-gelido.jpg", "lanza.jpg", "martillo-de-forja.jpg", "maza.jpg", "saetas.jpg", "susurrante.jpg", "vara-ava.jpg"],
     "wb": ["healers.jpg", "pierce.jpg", "rdps.jpg", "tanques.jpg", "utilidades.jpg"],
-    "zvz": ["zvz.jpg"], 
+    "zvz": ["zvz.jpg"],
     "pvp": ["pvp.jpg"]
 };
 //DB de la Blacklist
-let blacklist = ["razieck", "tryhardocasuall", "curamectm", "rodrigo98", "masterbum", "elsaid", "nandinblack", "haromathieu", "xchino12", "yamrtekudasai", "lildeath", "mrpeco", "zeusgaming", "kekles", "guawe", "kitten", "saethary", "easyone", "christian287", "razhot", "masterbun", "vampirodoidao", "ano1998", "ano1988", "mestrerafa33", "carrasco666", "mayoperalta", "heroargentina", "xexenco", "zitarex", "nashungho", "xwxenko", "tokitoxk", "de1v1d", "zawkl", "rosamelano123", "darkclementy", "dovad", "davruk", "wanter20", "gamacu", "xlengo", "elmechs", "jugodelucuma", "argtomas", "maup1", "nrnanito", "astaroth18", "xhakaa", "dalxe", "reneperez", "relivex", "zsend", "xdariusx", "lauty48", "xsautox", "xtaukox", "imprudence", "aeav", "noodleg", "morph33us", "therippertsa", "haromathieu", "kore52", "sluxs", "zoemm7", "eljerry", "jappipapu", "tknobi", "unno", "soyosio", "clotario", "solovinowe", "mataviejitas2mil", "manuchiliz", "garuu18", "fioreyo", "yomihira", "xeroxernes", "nachoguaca10", "shezwyk", "rlam18", "cotox3d", "topsito1", "tdxxxx", "lordleyendari", "villuca96", "merequetengue", "snoopywoow", "djwtech", "nairev", "pacsz", "maverickz121", "elmerlusa", "elmacho25", "holydps", "mateogox", "moshoxxx"];
+let blacklist = ["razieck", "tryhardocasuall", "curamectm", "rodrigo98", "masterbum", "elsaid", "nandinblack", "haromathieu", "xchino12", "yamrtekudasai", "lildeath", "mrpeco", "zeusgaming", "kekles", "guawe", "kitten", "saethary", "easyone", "christian287", "razhot", "masterbun", "vampirodoidao", "ano1998", "ano1988", "mestrerafa33", "carrasco666", "mayoperalta", "heroargentina", "xexenco", "zitarex", "nashungho", "xwxenko", "tokitoxk", "de1v1d", "zawkl", "rosamelano123", "darkclementy", "dovad", "davruk", "wanter20", "gamacu", "xlengo", "elmechs", "jugodelucuma", "argtomas", "maup1", "nrnanito", "astaroth18", "xhakaa", "dalxe", "reneperez", "relivex", "zsend", "xdariusx", "lauty48", "xsautox", "xtaukox", "imprudence", "aeav", "noodleg", "morph33us", "therippertsa", "haromathieu", "kore52", "sluxs", "zoemm7", "eljerry", "jappipapu", "tknobi", "unno", "soyosio", "clotario", "solovinowe", "mataviejitas2mil", "manuchiliz", "garuu18", "fioreyo", "yomihira", "xeroxernes", "nachoguaca10", "shezwyk", "rlam18", "cotox3d", "topsito1", "tdxxxx", "lordleyendari", "villuca96", "merequetengue", "snoopywoow", "djwtech", "nairev", "pacsz", "maverickz121", "elmerlusa", "elmacho25", "holydps", "mateogox", "moshoxxx", "lamuditavirgen", "pechofrioxd"];
 
 client.on('error', console.error);
 
@@ -58,7 +74,7 @@ client.on('ready', async () => { //Funcion para mandar los mensajes diarios
         }
     };
     // Verificar la hora cada minuto
-    setInterval(sendMessage, 60000); 
+    setInterval(sendMessage, 60000);
 });
 
 client.on('messageCreate', async (message) => {
@@ -76,8 +92,8 @@ client.on('messageCreate', async (message) => {
     } else if (command === 'all') {
         listAll(message, args);
     } else if (command == 'hora') {
-        horario(message,args);
-    } else if (command == 's'){
+        horario(message, args);
+    } else if (command == 's') {
         listSearch(message, args);
     } else if (command == 'blacklist') {
         listAdd(message, args);
@@ -107,21 +123,21 @@ async function execute(message, args) { //$builds
         message.channel.send(`Hubo un error: ${error.message}`);
     }
 }
-function listCats(message, args) { //$cats
-    let cats = [] 
+function listCats(message) { //$cats
+    let cats = []
     for (const index in database) {
         cats.push(`- ` + index);
     }
     message.channel.send("Las categorias disponibles son: \n" + cats.join('\n'));
 }
-function listAll(message, args) { //$all
-    let all = [] 
+function listAll(message) { //$all
+    let all = []
     for (const index in database) {
         database[index].forEach(option => all.push(`${`- `} ${index} - ${option}`));
     }
     message.channel.send("Las categorias y opciones disponibles son: \n" + all.join('\n'));
 }
-function horario(message, args) { //$hora
+function horario(message) { //$hora
     // Hora UTC
     const horaUTC = new Date();
     // Hora Argentina (UTC -3)
@@ -131,22 +147,19 @@ function horario(message, args) { //$hora
     const horaESP = new Date(horaUTC);
     horaESP.setUTCHours(horaESP.getUTCHours());
     // Formateamos las horas y minutos
-    const horaFormatoARG = horaARG.toLocaleTimeString('es-AR', { timeZone: 'America/Argentina/Buenos_Aires', hour12: false });
-    const horaFormatoESP = horaESP.toLocaleTimeString('es-ES', { timeZone: 'Europe/Madrid', hour12: false });
-    const horaFormatoUTC = horaUTC.toISOString().slice(11, 19);
+    const formatAR = horaARG.toLocaleTimeString('es-AR', { timeZone: 'America/Argentina/Buenos_Aires', hour12: false });
+    const formatES = horaESP.toLocaleTimeString('es-ES', { timeZone: 'Europe/Madrid', hour12: false });
+    const formatUTC = horaUTC.toISOString().slice(11, 19);
     // Msg
-    message.channel.send("Son las: \n" + horaFormatoARG + "hs en :flag_ar: \n" + horaFormatoESP + "hs en :flag_es: \n" + horaFormatoUTC + "UTC");
+    message.channel.send("Son las: \n" + formatAR + "hs en :flag_ar: \n" + formatES + "hs en :flag_es: \n" + formatUTC + "UTC");
 }
 
 async function choose(message, args) { //$mostrar
     console.log('Eligiendo imagen', args);
-
     try {
         console.log('Argumentos completos:', args);
-
         const categoria = args[0].toLowerCase(); // La categoría es el primer elemento 
         let imagen = args[1].toLowerCase(); // El nombre de la imagen es el segundo elemento 
-        
         console.log('Categoría:', categoria);
         console.log('Imagen:', imagen);
         if (imagen.endsWith(".jpg")) {
@@ -156,12 +169,10 @@ async function choose(message, args) { //$mostrar
         }
         if (categoria in database && database[categoria].includes(imagen)) {
             const url = `https://github.com/BlakeNN/ARI-Builds/blob/main/imagenes/${categoria}/${imagen}?raw=true`; //"?raw=true" para que sea el link de la img y no dle html
-            
             // Descargar de la img
             const response = await axios.get(url, {
                 responseType: 'arraybuffer' // No se que puta hace esto
             });
-
             message.channel.send({
                 files: [{
                     attachment: response.data,
@@ -178,47 +189,69 @@ async function choose(message, args) { //$mostrar
     }
 }
 async function listSearch(message, args) { //$s
-    console.log('Buscando en la blacklist', args);
-    try {
-        // Obtener categoria
-        const name = args[0].toLowerCase();
-        if (blacklist.includes(name)) {
-            message.channel.send("El pete si ta en la blacklist");
-        } else {
-            message.channel.send("El pete no ta en la blacklist");
+    const nombre = args[0].toLowerCase();
+    const consulta = `SELECT COUNT(*) AS count FROM BlackList WHERE Nombre = '${nombre}'`;
+    connection.query(consulta, (error, resultados, campos) => {
+        if (error) {
+            console.error('Error al buscar el nombre en la base de datos: ' + error.stack);
+            message.channel.send('Error')
+            return;
         }
-    } catch (error) {
-        console.error(error);
-        message.channel.send(`Hubo un error: ${error.message}`);
-    }
+        const count = resultados[0].count;
+        if (count > 0) {
+            console.log(`El nombre "${nombre}" está en la BlackList.`);
+            message.channel.send(`El nombre "${nombre}" está en la BlackList.`)
+        } else {
+            console.log(`El nombre "${nombre}" no está en la BlackList.`);
+            message.channel.send(`El nombre "${nombre}" no está en la BlackList.`);
+        }
+    });
 }
 async function listAdd(message, args) { //$blacklist
-    console.log("Añadiendo player a la blacklist", args);
-    const member = args[0].toLowerCase();
-    if (blacklist.includes(member)) {
-        message.channel.send("El player ya esta en la blacklist");
-    } else {
-        blacklist.push(member);
-        message.channel.send("Player añadido con exito\nEse pete no vuelve");
-        // Obtener el canal por ID
-        const logChannelId = '967450894524358686';
-        const logChannel = await message.client.channels.fetch(logChannelId);
-        const motivo = args.slice(1)
-        const motivoCon = motivo.join(" ")
-        // Enviar el nombre del miembro al canal de registro
-        logChannel.send(args[0] + " " + motivoCon);
-    }
+    const nombre = args[0].toLowerCase();
+    const insercion = `INSERT INTO BlackList (Nombre) VALUES ('${nombre}')`;
+    connection.query(insercion, (error, resultados, campos) => {
+        if (error) {
+            console.error('Error al insertar el nombre en la base de datos: ' + error.stack);
+            return;
+        }
+        console.log(`El nombre "${nombre}" ha sido insertado correctamente en la BlackList.`);
+        message.channel.send(`El nombre "${nombre}" ha sido insertado correctamente en la BlackList.`);
+    });
+    const logChannelId = '967450894524358686';
+    const logChannel = await message.client.channels.fetch(logChannelId);
+    const motivo = args.slice(1)
+    const motivoCon = motivo.join(" ")
+    // Enviar el nombre del miembro al canal de registro
+    logChannel.send(args[0] + " " + motivoCon);
 }
-function bs(message, args) { //$bs
-    const players = blacklist.map(player => `- ${player}`).join('\n');
-    message.channel.send("La blacklit actual es:\n" + players);
+function bs(message) { //$bs
+    const consultaMostrar = 'SELECT Nombre FROM BlackList';
+    connection.query(consultaMostrar, (error, resultados, campos) => {
+        if (error) {
+            console.error('Error al mostrar los nombres de la base de datos: ' + error.stack);
+            return;
+        }
+        console.log('Lista de nombres:');
+        let nombresConcatenados = '';
+        resultados.forEach((fila) => {
+            console.log(fila.Nombre);
+            nombresConcatenados += `- ` + fila.Nombre + `\n`;
+        });
+        message.channel.send('Lista de nombres:\n' + nombresConcatenados);
+    });
 }
 function listDel(message, args) { //$del
-    const name = args[0].toLowerCase();
-    if (blacklist.includes(name)) {
-        blacklist = blacklist.filter(player => player !== name);
-        message.channel.send("Se ha eliminado al player de la blacklist");
-    }
+    const nombre = args[0].toLowerCase();
+    const eliminacion = `DELETE FROM BlackList WHERE Nombre = '${nombre}'`;
+    connection.query(eliminacion, (error, resultados, campos) => {
+        if (error) {
+            console.error('Error al eliminar el nombre de la base de datos: ' + error.stack);
+            return;
+        }
+        console.log(`El nombre "${nombre}" ha sido eliminado correctamente de la BlackList.`);
+        message.channel.send(`El nombre "${nombre}" ha sido eliminado correctamente de la BlackList.`);
+    });
 }
 const token = "MTIwNTkyNzc1Nzk1MTc5NTMwMA.GVDWX7.vJkZXSG8QNI5_fUlFo0byVBoYqDsezpeypGVRM"; //token
 client.login(token);
