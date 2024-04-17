@@ -1,30 +1,10 @@
-const { Client, GatewayIntentBits } = require('discord.js');
+const { Client, GatewayIntentBits, Discord, Collection } = require('discord.js');
 const axios = require('axios');
-const mysql = require('mysql');
-// Credenciales MySQL
-const connection = mysql.createConnection({
-    host: 'b5mnztzfpyftahkfjbzu-mysql.services.clever-cloud.com',
-    user: 'uyygja9tskwubcgc',
-    password: 'mKF7H3tpyyumc1cZSNFO',
-    database: 'b5mnztzfpyftahkfjbzu'
-});
-// Coneccion a la base de datos
-connection.connect((error) => {
-    if (error) {
-        console.error('Error al conectar a la base de datos: ' + error.stack);
-        return;
-    }
+const fs = require('fs');
+const config = require('./config.json');
 
-    console.log('Conexión establecida correctamente');
-});
 const client = new Client({
-    intents: [
-        GatewayIntentBits.Guilds,   //"intenciones" del bot
-        GatewayIntentBits.GuildMessages,
-        GatewayIntentBits.MessageContent,
-        GatewayIntentBits.GuildMembers,
-        GatewayIntentBits.GuildVoiceStates,
-    ],
+    intents: 3276799,
 });
 
 const prefix = '$';
@@ -44,6 +24,9 @@ const database = {
     "zvz": ["zvz.jpg"],
     "pvp": ["pvp.jpg"]
 };
+//DB de la Blacklist
+let blacklist = ["razieck", "tryhardocasuall", "curamectm", "rodrigo98", "masterbum", "elsaid", "nandinblack", "haromathieu", "xchino12", "yamrtekudasai", "lildeath", "mrpeco", "zeusgaming", "kekles", "guawe", "kitten", "saethary", "easyone", "christian287", "razhot", "masterbun", "vampirodoidao", "ano1998", "ano1988", "mestrerafa33", "carrasco666", "mayoperalta", "heroargentina", "xexenco", "zitarex", "nashungho", "xwxenko", "tokitoxk", "de1v1d", "zawkl", "rosamelano123", "darkclementy", "dovad", "davruk", "wanter20", "gamacu", "xlengo", "elmechs", "jugodelucuma", "argtomas", "maup1", "nrnanito", "astaroth18", "xhakaa", "dalxe", "reneperez", "relivex", "zsend", "xdariusx", "lauty48", "xsautox", "xtaukox", "imprudence", "aeav", "noodleg", "morph33us", "therippertsa", "haromathieu", "kore52", "sluxs", "zoemm7", "eljerry", "jappipapu", "tknobi", "unno", "soyosio", "clotario", "solovinowe", "mataviejitas2mil", "manuchiliz", "garuu18", "fioreyo", "yomihira", "xeroxernes", "nachoguaca10", "shezwyk", "rlam18", "cotox3d", "topsito1", "tdxxxx", "lordleyendari", "villuca96", "merequetengue", "snoopywoow", "djwtech", "nairev", "pacsz", "maverickz121", "elmerlusa", "elmacho25", "holydps", "mateogox", "moshoxxx", "lamuditavirgen", "pechofrioxd", "damantio", "jefe828282828"];
+
 client.on('error', console.error);
 
 client.on('ready', async () => { //Funcion para mandar los mensajes diarios
@@ -59,7 +42,7 @@ client.on('ready', async () => { //Funcion para mandar los mensajes diarios
         // Verificacion
         if (currentHour === hora && currentMinute === minutos) {
             // Enviar mensaje 
-            channel.send('||@here ||\n**Desde el staff del gremio les deseamos buenos días a todos **\n:small_blue_diamond:Recuerden que nadie del staff les va a pedir por susurro que les presten su mamut o algún otro ítem de alto valor\n** Eviten caer en estafas ** \n:small_blue_diamond:También recordarles que se lean el canal de <#936713325348270121>, en el mismo encontraran las normas del **Gremio** y las de la **Alianza** \n** Buena suerte a todos **');
+            channel.send('||@here ||\n**Desde el staff del gremio les deseamos buenos días a todos **\n:small_blue_diamond:Recuerden que nadie del staff les va a pedir por susurro que les presten su mamut o algún otro ítem de alto valor\n**Eviten caer en estafas** \n:small_blue_diamond:También recordarles que se lean el canal de <#936713325348270121>, en el mismo encontraran las normas del **Gremio** \n**Buena suerte a todos**');
         }
         //--2 Obtener hora y minutos actuales
         const currentHour2 = new Date().getHours();
@@ -72,6 +55,34 @@ client.on('ready', async () => { //Funcion para mandar los mensajes diarios
     };
     // Verificar la hora cada minuto
     setInterval(sendMessage, 60000);
+    client.commands = new Collection();
+
+    fs.readdirSync("./slash_commands").forEach((commandFile) => {
+        const command = require(`./slash_commands/${commandFile}`);
+        client.commands.set(command.data.name, command);
+    });
+
+    (async () => {
+        try {
+            await client.application.commands.set(client.commands.map(cmd => cmd.data.toJSON()));
+            console.log(`Loaded ${client.commands.size} slash commands {/}`);
+        } catch (error) {
+            console.error('Error loading commands:', error);
+        }
+    })();
+});
+    //Slash Commands
+client.on("interactionCreate", async (interaction) => {
+    if (!interaction.isCommand()) return;
+
+    const command = client.commands.get(interaction.commandName);
+    if (!command) return;
+
+    try {
+        await command.execute(interaction);
+    } catch (error) {
+        console.error('Error executing command:', error);
+    }
 });
 
 client.on('messageCreate', async (message) => {
@@ -186,69 +197,91 @@ async function choose(message, args) { //$mostrar
     }
 }
 async function listSearch(message, args) { //$s
-    const nombre = args[0].toLowerCase();
-    const consulta = `SELECT COUNT(*) AS count FROM BlackList WHERE Nombre = '${nombre}'`;
-    connection.query(consulta, (error, resultados, campos) => {
-        if (error) {
-            console.error('Error al buscar el nombre en la base de datos: ' + error.stack);
-            message.channel.send('Error')
-            return;
-        }
-        const count = resultados[0].count;
-        if (count > 0) {
-            console.log(`El nombre "${nombre}" está en la BlackList.`);
-            message.channel.send(`El nombre "${nombre}" está en la BlackList.`)
+    console.log('Buscando en la blacklist', args);
+    try {
+        // Obtener categoria
+        const name = args[0].toLowerCase();
+        if (blacklist.includes(name)) {
+            message.channel.send("El pete si ta en la blacklist");
         } else {
-            console.log(`El nombre "${nombre}" no está en la BlackList.`);
-            message.channel.send(`El nombre "${nombre}" no está en la BlackList.`);
+            message.channel.send("El pete no ta en la blacklist");
         }
-    });
+    } catch (error) {
+        console.error(error);
+        message.channel.send(`Hubo un error: ${error.message}`);
+    }
 }
 async function listAdd(message, args) { //$blacklist
-    const nombre = args[0].toLowerCase();
-    const insercion = `INSERT INTO BlackList (Nombre) VALUES ('${nombre}')`;
-    connection.query(insercion, (error, resultados, campos) => {
-        if (error) {
-            console.error('Error al insertar el nombre en la base de datos: ' + error.stack);
-            return;
-        }
-        console.log(`El nombre "${nombre}" ha sido insertado correctamente en la BlackList.`);
-        message.channel.send(`El nombre "${nombre}" ha sido insertado correctamente en la BlackList.`);
-    });
-    const logChannelId = '967450894524358686';
-    const logChannel = await message.client.channels.fetch(logChannelId);
-    const motivo = args.slice(1)
-    const motivoCon = motivo.join(" ")
-    // Enviar el nombre del miembro al canal de registro
-    logChannel.send(args[0] + " " + motivoCon);
+    console.log("Añadiendo player a la blacklist", args);
+    const member = args[0].toLowerCase();
+    if (blacklist.includes(member)) {
+        message.channel.send("El player ya esta en la blacklist");
+    } else {
+        blacklist.push(member);
+        message.channel.send("Player añadido con exito\nEse pete no vuelve");
+        // Obtener el canal por ID
+        const logChannelId = '967450894524358686';
+        const logChannel = await message.client.channels.fetch(logChannelId);
+        const motivo = args.slice(1)
+        const motivoCon = motivo.join(" ")
+        // Enviar el nombre del miembro al canal de registro
+        logChannel.send(args[0] + " " + motivoCon);
+    }
 }
 function bs(message) { //$bs
-    const consultaMostrar = 'SELECT Nombre FROM BlackList';
-    connection.query(consultaMostrar, (error, resultados, campos) => {
-        if (error) {
-            console.error('Error al mostrar los nombres de la base de datos: ' + error.stack);
-            return;
-        }
-        console.log('Lista de nombres:');
-        let nombresConcatenados = '';
-        resultados.forEach((fila) => {
-            console.log(fila.Nombre);
-            nombresConcatenados += `- ` + fila.Nombre + `\n`;
-        });
-        message.channel.send('Lista de nombres:\n' + nombresConcatenados);
-    });
+    const players = blacklist.map(player => `- ${player}`).join('\n');
+    message.channel.send("La blacklit actual es:\n" + players);
 }
 function listDel(message, args) { //$del
-    const nombre = args[0].toLowerCase();
-    const eliminacion = `DELETE FROM BlackList WHERE Nombre = '${nombre}'`;
-    connection.query(eliminacion, (error, resultados, campos) => {
-        if (error) {
-            console.error('Error al eliminar el nombre de la base de datos: ' + error.stack);
-            return;
-        }
-        console.log(`El nombre "${nombre}" ha sido eliminado correctamente de la BlackList.`);
-        message.channel.send(`El nombre "${nombre}" ha sido eliminado correctamente de la BlackList.`);
-    });
+    const name = args[0].toLowerCase();
+    if (blacklist.includes(name)) {
+        blacklist = blacklist.filter(player => player !== name);
+        message.channel.send("Se ha eliminado al player de la blacklist");
+    }
 }
+//SlashCommands
+function bsSlash() { //bs
+    const players = blacklist.map(player => `- ${player}`).join('\n');
+    return "La blacklist actual es:\n" + players;
+}
+function slashSearch(args) { //$s
+    console.log('Buscando en la blacklist', args);
+    try {
+        // Obtener categoria
+        const name = args[0].toLowerCase();
+        if (blacklist.includes(name)) {
+            return "El pete si ta en la blacklist";
+        } else {
+            return "El pete no ta en la blacklist";
+        }
+    } catch (error) {
+        console.error(error);
+        return `Hubo un error: ${error.message}`;
+    }
+}
+async function slashAdd(name, motivo) { //$blacklist
+    console.log("Añadiendo player a la blacklist", name);
+    if (blacklist.includes(name)) {
+        return "El player ya está en la blacklist";
+    } else {
+        blacklist.push(name.toLowerCase());
+        // Obtener el canal por ID
+        const logChannelId = '967450894524358686';
+        const logChannel = await client.channels.fetch(logChannelId); 
+        // Enviar el nombre del miembro al canal de logs
+        logChannel.send(name + " Motivo: " + motivo);
+        return `Player ${name} añadido con éxito`;
+    }
+}
+function slashDel(name) { //$del
+    name = name.toLowerCase(); 
+    if (blacklist.includes(name)) {
+        blacklist = blacklist.filter(player => player !== name);
+        return "Se ha eliminado al player de la blacklist";
+    } else {
+        return "El player no estaba en la blacklist";
+    }
+}
+module.exports = { slashSearch, bsSlash, slashAdd, slashDel };
 const token = "MTIwNTkyNzc1Nzk1MTc5NTMwMA.GVDWX7.vJkZXSG8QNI5_fUlFo0byVBoYqDsezpeypGVRM"; //token
 client.login(token);
