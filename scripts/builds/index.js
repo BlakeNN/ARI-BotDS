@@ -1,4 +1,4 @@
-const { Client, GatewayIntentBits, Discord, Collection } = require('discord.js');
+const { Client, Collection, Guild } = require('discord.js');
 const axios = require('axios');
 const fs = require('fs');
 const config = require('./config.json');
@@ -7,13 +7,17 @@ const client = new Client({
     intents: 3276799,
 });
 
+const tokenGist = config.tokenGist;
+const gistId = config.gistId;
+const gistId2 = config.gistId2;
+const gistFilename = 'nombres.json';
+const gistFilename2 = 'mashBlacklist.json';
 const prefix = '$';
 const id_canal = '936708400945971233';
 const hora = 10; // Hora 
 const minutos = 30; // Minutos
 const id_canal2 = '1219801234270060596';
-const hora2 = 21; // Hora2 
-const minutos2 = 59; // Minutos2 
+
 
 // DB de las imgs
 const database = {
@@ -24,8 +28,172 @@ const database = {
     "zvz": ["zvz.jpg"],
     "pvp": ["pvp.jpg"]
 };
-//DB de la Blacklist
-let blacklist = ["razieck", "tryhardocasuall", "curamectm", "rodrigo98", "masterbum", "elsaid", "nandinblack", "haromathieu", "xchino12", "yamrtekudasai", "lildeath", "mrpeco", "zeusgaming", "kekles", "guawe", "kitten", "saethary", "easyone", "christian287", "razhot", "masterbun", "vampirodoidao", "ano1998", "ano1988", "mestrerafa33", "carrasco666", "mayoperalta", "heroargentina", "xexenco", "zitarex", "nashungho", "xwxenko", "tokitoxk", "de1v1d", "zawkl", "rosamelano123", "darkclementy", "dovad", "davruk", "wanter20", "gamacu", "xlengo", "elmechs", "jugodelucuma", "argtomas", "maup1", "nrnanito", "astaroth18", "xhakaa", "dalxe", "reneperez", "relivex", "zsend", "xdariusx", "lauty48", "xsautox", "xtaukox", "imprudence", "aeav", "noodleg", "morph33us", "therippertsa", "haromathieu", "kore52", "sluxs", "zoemm7", "eljerry", "jappipapu", "tknobi", "unno", "soyosio", "clotario", "solovinowe", "mataviejitas2mil", "manuchiliz", "garuu18", "fioreyo", "yomihira", "xeroxernes", "nachoguaca10", "shezwyk", "rlam18", "cotox3d", "topsito1", "tdxxxx", "lordleyendari", "villuca96", "merequetengue", "snoopywoow", "djwtech", "nairev", "pacsz", "maverickz121", "elmerlusa", "elmacho25", "holydps", "mateogox", "moshoxxx", "lamuditavirgen", "pechofrioxd", "damantio", "jefe828282828"];
+
+// Función para obtener la lista de nombres desde el Gist
+async function getNames(serverId) {
+    if (serverId == '936708400367169577') {
+        try {
+            const response = await axios.get(`https://api.github.com/gists/${gistId}`, {
+                headers: {
+                    Authorization: `token ${tokenGist}`,
+                },
+            });
+            const content = response.data.files[gistFilename].content;
+            return JSON.parse(content);
+        } catch (error) {
+            console.error('Error al obtener la lista de nombres:', error);
+            return [];
+        }
+    } else if (serverId == '1219175921345364020') {
+        try {
+            const response = await axios.get(`https://api.github.com/gists/${gistId2}`, {
+                headers: {
+                    Authorization: `token ${tokenGist}`,
+                },
+            });
+            const content = response.data.files[gistFilename2].content;
+            return JSON.parse(content);
+        } catch (error) {
+            console.error('Error al obtener la lista de nombres:', error);
+            return [];
+        }
+    } else {
+        return(`Servidor no válido`)
+    }
+}
+
+// Función para guardar la lista de nombres actualizada en el Gist
+async function saveNames(names, serverId) {
+    if (serverId == '936708400367169577') {
+        try {
+            await axios.patch(
+                `https://api.github.com/gists/${gistId}`,
+                {
+                    files: {
+                        [gistFilename]: {
+                            content: JSON.stringify(names),
+                        },
+                    },
+                },
+                {
+                    headers: {
+                        Authorization: `token ${tokenGist}`,
+                    },
+                }
+            );
+            return true;
+        } catch (error) {
+            console.error('Error al guardar la lista de nombres:', error);
+            return false;
+        }
+    } else if (serverId == '1219175921345364020') {
+        try {
+            await axios.patch(
+                `https://api.github.com/gists/${gistId2}`,
+                {
+                    files: {
+                        [gistFilename2]: {
+                            content: JSON.stringify(names),
+                        },
+                    },
+                },
+                {
+                    headers: {
+                        Authorization: `token ${tokenGist}`,
+                    },
+                }
+            );
+            return true;
+        } catch (error) {
+            console.error('Error al guardar la lista de nombres:', error);
+            return false;
+        }
+    } else {
+        return(`Servidor no valido`)
+    }
+}
+
+// Función para mostrar toda la lista de nombres
+async function showAllNames(message) {
+    try {
+        const serverId = message.guild.id;
+        const names = await getNames(serverId);
+        message.channel.send(`La Blacklist es:\n${names.map(name => `- ${name}`).join('\n')}`);
+    } catch (error) {
+        console.error('Error al mostrar la lista de nombres:', error);
+        message.channel.send('Hubo un error al mostrar la lista de nombres.');
+    }
+}
+
+// Función para buscar un nombre en la lista
+async function searchName(message, nameToSearch) {
+    try {
+        const serverId = message.guild.id;
+        const names = await getNames(serverId);
+        const found = names.includes(nameToSearch);
+        message.channel.send(found ? `${nameToSearch} está en la Blacklist.` : `${nameToSearch} no está en la Blacklist.`);
+    } catch (error) {
+        console.error('Error al buscar el nombre:', error);
+        message.channel.send('Hubo un error al buscar el nombre.');
+    }
+}
+
+// Función para agregar un nombre a la lista
+async function addName(message, nameToAdd, args) {
+    try {
+        const serverId = message.guild.id;
+        const names = await getNames(serverId);
+        names.push(nameToAdd);
+        const saved = await saveNames(names, serverId);
+        if (serverId == "936708400367169577") {
+            if (saved) {
+                message.channel.send(`${nameToAdd} agregado a la Blacklist.`);
+                const logChannelId = '967450894524358686';
+                const logChannel = await message.client.channels.fetch(logChannelId);
+                const motivo = args.slice(1)
+                const motivoCon = motivo.join(" ")
+                // Enviar el nombre del miembro al canal de registro
+                logChannel.send(args[0] + " " + motivoCon);
+            } else {
+                message.channel.send(`Error al agregar ${nameToAdd} a la Blacklist.`);
+            }
+        } else if (serverId == "1219175921345364020") {
+            if (saved) {
+                message.channel.send(`${nameToAdd} agregado a la Blacklist.`);
+            } else {
+                message.channel.send(`Error al agregar ${nameToAdd} a la Blacklist.`);
+            }
+        } else {
+            message.reply('Servidor no valido')
+        }
+    } catch (error) {
+        console.error('Error al agregar el nombre:', error);
+        message.channel.send('Hubo un error al agregar el nombre.');
+    }
+}
+
+// Función para eliminar un nombre de la lista
+async function deleteName(message, nameToDelete) {
+    try {
+        const serverId = message.guild.id;
+        const names = await getNames(serverId);
+        const index = names.indexOf(nameToDelete);
+        if (index !== -1) {
+            names.splice(index, 1);
+            const saved = await saveNames(names, serverId);
+            if (saved) {
+                message.channel.send(`${nameToDelete} eliminado de la Blacklist.`);
+            } else {
+                message.channel.send(`Error al eliminar ${nameToDelete} de la Blacklist.`);
+            }
+        } else {
+            message.channel.send(`${nameToDelete} no encontrado en la Blacklist.`);
+        }
+    } catch (error) {
+        console.error('Error al eliminar el nombre:', error);
+        message.channel.send('Hubo un error al eliminar el nombre.');
+    }
+}
 
 client.on('error', console.error);
 
@@ -43,25 +211,17 @@ client.on('ready', async () => { //Funcion para mandar los mensajes diarios
         if (currentHour === hora && currentMinute === minutos) {
             // Enviar mensaje 
             channel.send('||@here ||\n**Desde el staff del gremio les deseamos buenos días a todos **\n:small_blue_diamond:Recuerden que nadie del staff les va a pedir por susurro que les presten su mamut o algún otro ítem de alto valor\n**Eviten caer en estafas** \n:small_blue_diamond:También recordarles que se lean el canal de <#936713325348270121>, en el mismo encontraran las normas del **Gremio** \n**Buena suerte a todos**');
-        }
-        //--2 Obtener hora y minutos actuales
-        const currentHour2 = new Date().getHours();
-        const currentMinute2 = new Date().getMinutes();
-        // Verificacion
-        if (currentHour2 === hora2 && currentMinute2 === minutos2) {
-            // Enviar mensaje 
-            channel2.send(':scroll: **M A S H L E**:scroll:\n\n **¿Quiénes somos?**\nSomos un gremio que busca jugadores para contenido en general\n\n**¿Qué ofrecemos?**\n:white_check_mark:Word Boss/ Faccion / Gank\n:white_check_mark:Comunidad para jugar\n:white_check_mark:Contenido  21/00/03/05 UTC)\n:white_check_mark:0% Tax / No cuotas\n\n**¿Qué buscamos?**\n:shield: PC Player\n:shield: Ser Activo\n\n**Para finalizar, estamos ubicados en Lymhurst** https://discord.gg/mashleguild ||@here||');
+            channel2.send(':scroll: **M A S H L E**:scroll:\n\n **¿Quiénes somos?**\nSomos un gremio que busca jugadores para contenido en general\n\n**¿Qué ofrecemos?**\n:white_check_mark:Guild Bomb\n:white_check_mark:Word Boss / Faccion / Gank / Avalonianas\n:white_check_mark:Comunidad para jugar\n:white_check_mark:Contenido  18/20/22/04 UTC)\n:white_check_mark:0% Tax / No cuotas\n\n**¿Qué buscamos?**\n:shield: PC Player\n:shield: Ser Activo\n\n**Para finalizar, estamos ubicados en ThetFort** https://discord.gg/mashleao ||@here||');
         }
     };
     // Verificar la hora cada minuto
     setInterval(sendMessage, 60000);
     client.commands = new Collection();
-
+    //SlashCommands - Import 
     fs.readdirSync("./slash_commands").forEach((commandFile) => {
         const command = require(`./slash_commands/${commandFile}`);
         client.commands.set(command.data.name, command);
     });
-
     (async () => {
         try {
             await client.application.commands.set(client.commands.map(cmd => cmd.data.toJSON()));
@@ -71,7 +231,7 @@ client.on('ready', async () => { //Funcion para mandar los mensajes diarios
         }
     })();
 });
-    //Slash Commands
+//Slash Commands - Evento
 client.on("interactionCreate", async (interaction) => {
     if (!interaction.isCommand()) return;
 
@@ -84,13 +244,12 @@ client.on("interactionCreate", async (interaction) => {
         console.error('Error executing command:', error);
     }
 });
-
+//Comandos - Declaracion
 client.on('messageCreate', async (message) => {
     if (!message.content.startsWith(prefix) || message.author.bot) return;
     console.log('Mensaje recibido:', message.content);
     const args = message.content.slice(prefix.length).split(' ');
     const command = args.shift().toLowerCase();
-    //Comandos
     if (command === 'builds') {
         execute(message, args);
     } else if (command === 'mostrar') {
@@ -101,14 +260,17 @@ client.on('messageCreate', async (message) => {
         listAll(message, args);
     } else if (command == 'hora') {
         horario(message, args);
-    } else if (command == 's') {
-        listSearch(message, args);
-    } else if (command == 'blacklist') {
-        listAdd(message, args);
     } else if (command == 'bs') {
-        bs(message, args);
-    } else if (command == 'del') {
-        listDel(message, args);
+        await showAllNames(message);
+    } else if (command === 's') {
+        const nameToSearch = args.join(' ');
+        await searchName(message, nameToSearch);
+    } else if (command === 'blacklist') {
+        const nameToAdd = args.join(' ');
+        await addName(message, nameToAdd);
+    } else if (command === 'del') {
+        const nameToDelete = args.join(' ');
+        await deleteName(message, nameToDelete);
     } else {
         message.channel.send('Juani es un pelotudo y no codeo tu comando, o lo estas poniendo mal y sos mas pelotudo que Juani');
     }
@@ -177,7 +339,7 @@ async function choose(message, args) { //$mostrar
         }
         if (categoria in database && database[categoria].includes(imagen)) {
             const url = `https://github.com/BlakeNN/ARI-Builds/blob/main/imagenes/${categoria}/${imagen}?raw=true`; //"?raw=true" para que sea el link de la img y no dle html
-            // Descargar de la img
+            // Descargar la img
             const response = await axios.get(url, {
                 responseType: 'arraybuffer' // No se que puta hace esto
             });
@@ -196,92 +358,53 @@ async function choose(message, args) { //$mostrar
         message.channel.send(`Hubo un error: ${error.message}\n Poné bien el comando salame ($mostrar "categoria" "build")`);
     }
 }
-async function listSearch(message, args) { //$s
-    console.log('Buscando en la blacklist', args);
-    try {
-        // Obtener categoria
-        const name = args[0].toLowerCase();
-        if (blacklist.includes(name)) {
-            message.channel.send("El pete si ta en la blacklist");
-        } else {
-            message.channel.send("El pete no ta en la blacklist");
-        }
-    } catch (error) {
-        console.error(error);
-        message.channel.send(`Hubo un error: ${error.message}`);
-    }
-}
-async function listAdd(message, args) { //$blacklist
-    console.log("Añadiendo player a la blacklist", args);
-    const member = args[0].toLowerCase();
-    if (blacklist.includes(member)) {
-        message.channel.send("El player ya esta en la blacklist");
-    } else {
-        blacklist.push(member);
-        message.channel.send("Player añadido con exito\nEse pete no vuelve");
-        // Obtener el canal por ID
-        const logChannelId = '967450894524358686';
-        const logChannel = await message.client.channels.fetch(logChannelId);
-        const motivo = args.slice(1)
-        const motivoCon = motivo.join(" ")
-        // Enviar el nombre del miembro al canal de registro
-        logChannel.send(args[0] + " " + motivoCon);
-    }
-}
-function bs(message) { //$bs
-    const players = blacklist.map(player => `- ${player}`).join('\n');
-    message.channel.send("La blacklit actual es:\n" + players);
-}
-function listDel(message, args) { //$del
-    const name = args[0].toLowerCase();
-    if (blacklist.includes(name)) {
-        blacklist = blacklist.filter(player => player !== name);
-        message.channel.send("Se ha eliminado al player de la blacklist");
-    }
-}
 //SlashCommands
-function bsSlash() { //bs
-    const players = blacklist.map(player => `- ${player}`).join('\n');
-    return "La blacklist actual es:\n" + players;
+async function bsSlash() { //bs
+    const names = await getNames("936708400367169577");
+    return `La Blacklist es:\n${names.map(name => `- ${name}`).join('\n')}`;
 }
-function slashSearch(args) { //$s
-    console.log('Buscando en la blacklist', args);
-    try {
-        // Obtener categoria
-        const name = args[0].toLowerCase();
-        if (blacklist.includes(name)) {
-            return "El pete si ta en la blacklist";
+
+async function slashSearch(nameToSearch) { //$s
+    const names = await getNames("936708400367169577");
+    const found = names.includes(nameToSearch.toLowerCase());
+    return found ? `${nameToSearch} está en la Blacklist.` : `${nameToSearch} no está en la Blacklist.`;
+}
+
+async function slashAdd(nameToAdd, motivo) { //$blacklist
+    const names = await getNames("936708400367169577");
+    if (names.includes(nameToAdd.toLowerCase())) {
+        return `${nameToAdd} ya está en la Blacklist`;
+    } else {
+        names.push(nameToAdd.toLowerCase());
+        const saved = await saveNames(names, serverId);
+        if (saved) {
+            // Obtener el canal por ID
+            const logChannelId = '967450894524358686';
+            const logChannel = await interaction.client.channels.fetch(logChannelId);
+            logChannel.send(`${nameToAdd} Motivo: ${motivo}`);
+            return `${nameToAdd} agregado a la Blacklist.`;
         } else {
-            return "El pete no ta en la blacklist";
+            return `Error al agregar ${nameToAdd} a la Blacklist.`;
         }
-    } catch (error) {
-        console.error(error);
-        return `Hubo un error: ${error.message}`;
     }
 }
-async function slashAdd(name, motivo) { //$blacklist
-    console.log("Añadiendo player a la blacklist", name);
-    if (blacklist.includes(name)) {
-        return "El player ya está en la blacklist";
+
+async function slashDel(nameToDelete) { //$del
+    const names = await getNames("936708400367169577");
+    const index = names.indexOf(nameToDelete.toLowerCase());
+    if (index !== -1) {
+        names.splice(index, 1);
+        const saved = await saveNames(names, serverId);
+        if (saved) {
+            return `${nameToDelete} eliminado de la Blacklist.`;
+        } else {
+            return `Error al eliminar ${nameToDelete} de la Blacklist.`;
+        }
     } else {
-        blacklist.push(name.toLowerCase());
-        // Obtener el canal por ID
-        const logChannelId = '967450894524358686';
-        const logChannel = await client.channels.fetch(logChannelId); 
-        // Enviar el nombre del miembro al canal de logs
-        logChannel.send(name + " Motivo: " + motivo);
-        return `Player ${name} añadido con éxito`;
+        return `${nameToDelete} no encontrado en la Blacklist.`;
     }
 }
-function slashDel(name) { //$del
-    name = name.toLowerCase(); 
-    if (blacklist.includes(name)) {
-        blacklist = blacklist.filter(player => player !== name);
-        return "Se ha eliminado al player de la blacklist";
-    } else {
-        return "El player no estaba en la blacklist";
-    }
-}
+
 module.exports = { slashSearch, bsSlash, slashAdd, slashDel };
 const token = "MTIwNTkyNzc1Nzk1MTc5NTMwMA.GVDWX7.vJkZXSG8QNI5_fUlFo0byVBoYqDsezpeypGVRM"; //token
 client.login(token);
