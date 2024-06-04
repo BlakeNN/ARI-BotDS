@@ -210,7 +210,7 @@ client.on('ready', async () => { //Funcion para mandar los mensajes diarios
         // Verificacion
         if (currentHour === hora && currentMinute === minutos) {
             // Enviar mensaje 
-            channel.send('||@here ||\n**Desde el staff del gremio les deseamos buenos días a todos **\n:small_blue_diamond:Recuerden que nadie del staff les va a pedir por susurro que les presten su mamut o algún otro ítem de alto valor\n**Eviten caer en estafas** \n:small_blue_diamond:También recordarles que se lean el canal de <#936713325348270121>, en el mismo encontraran las normas del **Gremio** \n**Buena suerte a todos**');
+            channel.send('||@here ||\n**Desde el staff del gremio les deseamos buenos días a todos **\n:small_blue_diamond:Recuerden que nadie del staff les va a pedir por susurro que les presten su mamut o algún otro ítem de alto valor\n**Eviten caer en estafas** \n:small_blue_diamond:También recordarles que se lean el canal de <#936713325348270121>, en el mismo encontraran las normas del **Gremio** \nAnte cualquier duda, consulta o queja ya saben, el Staff esta disponible, solo manden un DM\n**Buena suerte a todos**');
             channel2.send(':scroll: **M A S H L E**:scroll:\n\n **¿Quiénes somos?**\nSomos un gremio que busca jugadores para contenido en general\n\n**¿Qué ofrecemos?**\n:white_check_mark:Guild Bomb\n:white_check_mark:Word Boss / Faccion / Gank / Avalonianas\n:white_check_mark:Comunidad para jugar\n:white_check_mark:Contenido  18/20/22/04 UTC)\n:white_check_mark:0% Tax / No cuotas\n\n**¿Qué buscamos?**\n:shield: PC Player\n:shield: Ser Activo\n\n**Para finalizar, estamos ubicados en ThetFort** https://discord.gg/mashleao ||@here||');
         }
     };
