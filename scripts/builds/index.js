@@ -9,25 +9,15 @@ const client = new Client({
 
 const tokenGist = config.tokenGist;
 const gistId = config.gistId;
-const gistId2 = config.gistId2;
 const gistFilename = 'nombres.json';
-const gistFilename2 = 'mashBlacklist.json';
 const prefix = '$';
 const id_canal = '936708400945971233';
 const hora = 10; // Hora 
 const minutos = 30; // Minutos
 const id_canal2 = '1219801234270060596';
-
-
-// DB de las imgs
-const database = {
-    "ava-buff": ["arco.jpg", "corta-curas.jpg", "enigmatico.jpg", "flamigero.jpg", "frost.jpg", "healer-party.jpg", "main-healer.jpg", "main-tank.jpg", "monje-negro.jpg", "prisma.jpg", "sc.jpg", "set-skip.jpg", "xbow.jpg"],
-    "ava-full": ["1h-arcano.jpg", "arco.jpg", "flamigero.jpg", "frost.jpg", "gran-arcano.jpg", "healer-party1.jpg", "healer-party2.jpg", "ironroot.jpg", "main-heal.jpg", "main-tank.jpg", "off-tank.jpg", "rompe-reinos.jpg", "sc-dps.jpg", "sc-supp.jpg", "xbow.jpg"],
-    "gank": ["ballesta-oneshot.jpg", "concedemuertes.jpg", "doble-daga.jpg", "doble-filo.jpg", "fuego-1h.jpg", "garza.jpg", "gran-arcano.jpg", "grito-gelido.jpg", "lanza.jpg", "martillo-de-forja.jpg", "maza.jpg", "saetas.jpg", "susurrante.jpg", "vara-ava.jpg"],
-    "wb": ["healers.jpg", "pierce.jpg", "rdps.jpg", "tanques.jpg", "utilidades.jpg"],
-    "zvz": ["zvz.jpg"],
-    "pvp": ["pvp.jpg"]
-};
+const id_canal3 = '1245166385735139328';
+let namesGiveaway = [];
+let serverId = config.id_arg;
 
 // Función para obtener la lista de nombres desde el Gist
 async function getNames(serverId) {
@@ -39,19 +29,6 @@ async function getNames(serverId) {
                 },
             });
             const content = response.data.files[gistFilename].content;
-            return JSON.parse(content);
-        } catch (error) {
-            console.error('Error al obtener la lista de nombres:', error);
-            return [];
-        }
-    } else if (serverId == '1219175921345364020') {
-        try {
-            const response = await axios.get(`https://api.github.com/gists/${gistId2}`, {
-                headers: {
-                    Authorization: `token ${tokenGist}`,
-                },
-            });
-            const content = response.data.files[gistFilename2].content;
             return JSON.parse(content);
         } catch (error) {
             console.error('Error al obtener la lista de nombres:', error);
@@ -86,28 +63,6 @@ async function saveNames(names, serverId) {
             console.error('Error al guardar la lista de nombres:', error);
             return false;
         }
-    } else if (serverId == '1219175921345364020') {
-        try {
-            await axios.patch(
-                `https://api.github.com/gists/${gistId2}`,
-                {
-                    files: {
-                        [gistFilename2]: {
-                            content: JSON.stringify(names),
-                        },
-                    },
-                },
-                {
-                    headers: {
-                        Authorization: `token ${tokenGist}`,
-                    },
-                }
-            );
-            return true;
-        } catch (error) {
-            console.error('Error al guardar la lista de nombres:', error);
-            return false;
-        }
     } else {
         return(`Servidor no valido`)
     }
@@ -116,7 +71,6 @@ async function saveNames(names, serverId) {
 // Función para mostrar toda la lista de nombres
 async function showAllNames(message) {
     try {
-        const serverId = message.guild.id;
         const names = await getNames(serverId);
         message.channel.send(`La Blacklist es:\n${names.map(name => `- ${name}`).join('\n')}`);
     } catch (error) {
@@ -128,7 +82,6 @@ async function showAllNames(message) {
 // Función para buscar un nombre en la lista
 async function searchName(message, nameToSearch) {
     try {
-        const serverId = message.guild.id;
         const names = await getNames(serverId);
         const found = names.includes(nameToSearch);
         message.channel.send(found ? `${nameToSearch} está en la Blacklist.` : `${nameToSearch} no está en la Blacklist.`);
@@ -141,23 +94,10 @@ async function searchName(message, nameToSearch) {
 // Función para agregar un nombre a la lista
 async function addName(message, nameToAdd, args) {
     try {
-        const serverId = message.guild.id;
         const names = await getNames(serverId);
         names.push(nameToAdd);
         const saved = await saveNames(names, serverId);
         if (serverId == "936708400367169577") {
-            if (saved) {
-                message.channel.send(`${nameToAdd} agregado a la Blacklist.`);
-                const logChannelId = '967450894524358686';
-                const logChannel = await message.client.channels.fetch(logChannelId);
-                const motivo = args.slice(1)
-                const motivoCon = motivo.join(" ")
-                // Enviar el nombre del miembro al canal de registro
-                logChannel.send(args[0] + " " + motivoCon);
-            } else {
-                message.channel.send(`Error al agregar ${nameToAdd} a la Blacklist.`);
-            }
-        } else if (serverId == "1219175921345364020") {
             if (saved) {
                 message.channel.send(`${nameToAdd} agregado a la Blacklist.`);
             } else {
@@ -175,7 +115,6 @@ async function addName(message, nameToAdd, args) {
 // Función para eliminar un nombre de la lista
 async function deleteName(message, nameToDelete) {
     try {
-        const serverId = message.guild.id;
         const names = await getNames(serverId);
         const index = names.indexOf(nameToDelete);
         if (index !== -1) {
@@ -202,6 +141,7 @@ client.on('ready', async () => { //Funcion para mandar los mensajes diarios
     // Obtener el canal por ID
     const channel = await client.channels.fetch(id_canal);
     const channel2 = await client.channels.fetch(id_canal2);
+    const channel3 = await client.channels.fetch(id_canal3);
     // Función para enviar mensaje
     const sendMessage = () => {
         // Obtener hora y minutos actuales
@@ -210,8 +150,10 @@ client.on('ready', async () => { //Funcion para mandar los mensajes diarios
         // Verificacion
         if (currentHour === hora && currentMinute === minutos) {
             // Enviar mensaje 
+            const candidatoId = '996601587277500447';
             channel.send('||@here ||\n**Desde el staff del gremio les deseamos buenos días a todos **\n:small_blue_diamond:Recuerden que nadie del staff les va a pedir por susurro que les presten su mamut o algún otro ítem de alto valor\n**Eviten caer en estafas** \n:small_blue_diamond:También recordarles que se lean el canal de <#936713325348270121>, en el mismo encontraran las normas del **Gremio** \nAnte cualquier duda, consulta o queja ya saben, el Staff esta disponible, solo manden un DM\n**Buena suerte a todos**');
             channel2.send(':scroll: **M A S H L E**:scroll:\n\n **¿Quiénes somos?**\nSomos un gremio que busca jugadores para contenido en general\n\n**¿Qué ofrecemos?**\n:white_check_mark:Guild Bomb\n:white_check_mark:Word Boss / Faccion / Gank / Avalonianas\n:white_check_mark:Comunidad para jugar\n:white_check_mark:Contenido  18/20/22/04 UTC)\n:white_check_mark:0% Tax / No cuotas\n\n**¿Qué buscamos?**\n:shield: PC Player\n:shield: Ser Activo\n\n**Para finalizar, estamos ubicados en ThetFort** https://discord.gg/mashleao ||@here||');
+            channel3.send(`||<@&${candidatoId}> ||\n:flag_ar: **ArGentiNidad** :flag_ar:\n\n**¿Quiénes somos?**\nSomos un gremio de veteranos que esta en búsqueda de nuevos integrantes con ganas de jugar, reírse un rato y disfrutar.\n\n**¿Qué ofrecemos?**\n:white_check_mark: Avalonianas - Fama - Roams - Ganks.\n:white_check_mark: Comunidad sin toxicidad.\n:white_check_mark: Contenido variado en casi todos los horarios.\n:white_check_mark: 0 Tax - 0 Cuota.\n\n**Requisitos:**\n:shield: 120M de Fama general\n:shield: 20M de Fama PvP\n:shield: Ser Activo en Discord\n:shield: Respeto y Compañerismo\n\nEstamos ubicados en Lymhurst: https://discord.gg/XDJRAhfZPU`);
         }
     };
     // Verificar la hora cada minuto
@@ -250,17 +192,7 @@ client.on('messageCreate', async (message) => {
     console.log('Mensaje recibido:', message.content);
     const args = message.content.slice(prefix.length).split(' ');
     const command = args.shift().toLowerCase();
-    if (command === 'builds') {
-        execute(message, args);
-    } else if (command === 'mostrar') {
-        choose(message, args);
-    } else if (command === 'cats') {
-        listCats(message, args);
-    } else if (command === 'all') {
-        listAll(message, args);
-    } else if (command == 'hora') {
-        horario(message, args);
-    } else if (command == 'bs') {
+    if (command == 'bs') {
         await showAllNames(message);
     } else if (command === 's') {
         const nameToSearch = args.join(' ');
@@ -271,93 +203,25 @@ client.on('messageCreate', async (message) => {
     } else if (command === 'del') {
         const nameToDelete = args.join(' ');
         await deleteName(message, nameToDelete);
+    } else if (command == 'sorteo') {
+        namesGiveaway = [];
+        // console.log(`Array vacio: ${namesGiveaway}`)
+        const ganadores = args[0];
+        // console.log(ganadores);
+        args.shift();
+        const names = args.forEach(function(argumento){
+            namesGiveaway.push(argumento);
+        });
+        // console.log(args);
+        // console.log(namesGiveaway);
+        message.channel.send(crearSorteo(names, ganadores));
+    } else if (command == 'test') {
+        testeo();
     } else {
         message.channel.send('Juani es un pelotudo y no codeo tu comando, o lo estas poniendo mal y sos mas pelotudo que Juani');
     }
 });
 
-async function execute(message, args) { //$builds
-    console.log('Buscando imagen', args);
-    try {
-        // Obtener categoria
-        const categoria = args[0];
-        if (categoria in database) {
-            // Enviar cada opcion
-            const opciones = database[categoria].map(opcion => `- ${opcion}`).join('\n');
-            message.channel.send(`Elige una opción de ${categoria}:\n${opciones}`);
-        } else {
-            message.channel.send("Categoría no encontrada.");
-        }
-    } catch (error) {
-        console.error(error);
-        message.channel.send(`Hubo un error: ${error.message}`);
-    }
-}
-function listCats(message) { //$cats
-    let cats = []
-    for (const index in database) {
-        cats.push(`- ` + index);
-    }
-    message.channel.send("Las categorias disponibles son: \n" + cats.join('\n'));
-}
-function listAll(message) { //$all
-    let all = []
-    for (const index in database) {
-        database[index].forEach(option => all.push(`${`- `} ${index} - ${option}`));
-    }
-    message.channel.send("Las categorias y opciones disponibles son: \n" + all.join('\n'));
-}
-function horario(message) { //$hora
-    // Hora UTC
-    const horaUTC = new Date();
-    // Hora Argentina (UTC -3)
-    const horaARG = new Date(horaUTC);
-    horaARG.setUTCHours(horaARG.getUTCHours());
-    // Hora España (UTC +1)
-    const horaESP = new Date(horaUTC);
-    horaESP.setUTCHours(horaESP.getUTCHours());
-    // Formateamos las horas y minutos
-    const formatAR = horaARG.toLocaleTimeString('es-AR', { timeZone: 'America/Argentina/Buenos_Aires', hour12: false });
-    const formatES = horaESP.toLocaleTimeString('es-ES', { timeZone: 'Europe/Madrid', hour12: false });
-    const formatUTC = horaUTC.toISOString().slice(11, 19);
-    // Msg
-    message.channel.send("Son las: \n" + formatAR + "hs en :flag_ar: \n" + formatES + "hs en :flag_es: \n" + formatUTC + "UTC");
-}
-
-async function choose(message, args) { //$mostrar
-    console.log('Eligiendo imagen', args);
-    try {
-        console.log('Argumentos completos:', args);
-        const categoria = args[0].toLowerCase(); // La categoría es el primer elemento 
-        let imagen = args[1].toLowerCase(); // El nombre de la imagen es el segundo elemento 
-        console.log('Categoría:', categoria);
-        console.log('Imagen:', imagen);
-        if (imagen.endsWith(".jpg")) {
-            console.log("Ya tiene la extension")
-        } else {
-            imagen = imagen + ".jpg"
-        }
-        if (categoria in database && database[categoria].includes(imagen)) {
-            const url = `https://github.com/BlakeNN/ARI-Builds/blob/main/imagenes/${categoria}/${imagen}?raw=true`; //"?raw=true" para que sea el link de la img y no dle html
-            // Descargar la img
-            const response = await axios.get(url, {
-                responseType: 'arraybuffer' // No se que puta hace esto
-            });
-            message.channel.send({
-                files: [{
-                    attachment: response.data,
-                    name: imagen
-                }]
-            });
-            console.log(response);
-        } else {
-            message.channel.send(`Categoría o imagen no encontrada.\n Poné bien el comando salame ($mostrar "categoria" "build")`);
-        }
-    } catch (error) {
-        console.error(error);
-        message.channel.send(`Hubo un error: ${error.message}\n Poné bien el comando salame ($mostrar "categoria" "build")`);
-    }
-}
 //SlashCommands
 async function bsSlash() { //bs
     const names = await getNames("936708400367169577");
@@ -378,10 +242,6 @@ async function slashAdd(nameToAdd, motivo) { //$blacklist
         names.push(nameToAdd.toLowerCase());
         const saved = await saveNames(names, serverId);
         if (saved) {
-            // Obtener el canal por ID
-            const logChannelId = '967450894524358686';
-            const logChannel = await interaction.client.channels.fetch(logChannelId);
-            logChannel.send(`${nameToAdd} Motivo: ${motivo}`);
             return `${nameToAdd} agregado a la Blacklist.`;
         } else {
             return `Error al agregar ${nameToAdd} a la Blacklist.`;
@@ -403,6 +263,69 @@ async function slashDel(nameToDelete) { //$del
     } else {
         return `${nameToDelete} no encontrado en la Blacklist.`;
     }
+}
+function getRandomIntInclusive(min, max) {
+    min = Math.ceil(min);
+    max = Math.floor(max);
+    return Math.floor(Math.random() * (max - min + 1) + min);
+}
+function crearSorteo(names, ganadores) {
+    listaOrd = `${namesGiveaway.map(name => `- ${name}`).join('\n')}`
+    largo = namesGiveaway.length;
+    if (ganadores > largo) {
+        return `No puedes ingresar mas ganadores que participantes`;
+    } else if (ganadores == largo) {
+        if (ganadores == 1) {
+            return `Aviso: Ingresaste la misma cantidad de ganadores y de participantes.\nLa lista de participantes es:\n${listaOrd}\nEl ganador es:\n${finalizarSorteo(names, ganadores)}`;
+        } else if (ganadores != 0) {
+            return `Aviso: Ingresaste la misma cantidad de ganadores y de participantes.\nLa lista de participantes es:\n${listaOrd}\nLos ganadores son:\n${finalizarSorteo(names, ganadores)}`;
+        } else {
+            return `No puede haber 0 ganadores`
+        }
+    } else {
+        if (ganadores == 1) {
+            return `La lista de participantes es:\n${listaOrd}\nEl ganador es:\n${finalizarSorteo(names, ganadores)}`;
+        } else if (ganadores != 0) {
+            return `La lista de participantes es:\n${listaOrd}\nLos ganadores son:\n${finalizarSorteo(names, ganadores)}`;
+        } else {
+            return `No puede haber 0 ganadores`
+        }
+    }
+
+}
+function finalizarSorteo(names, ganadores) {
+    let i = 0;
+    let msgGanadores = '';
+    let listaGanadores = [];
+    let yaGano = [];
+    let minimo = 0;
+    let largo = namesGiveaway.length;
+    let maximo = largo - 1;
+    let nroRandom = 0;
+    while (i < ganadores) {
+        if (yaGano.includes(nroRandom)) {
+            console.log("Repetido");
+            namesGiveaway.shift[nroRandom];
+            yaGano = [];
+            largo = namesGiveaway.length;
+            let maximo = largo - 1;
+            nroRandom = getRandomIntInclusive(minimo, maximo);
+            let ganador = namesGiveaway[nroRandom];
+            yaGano.push(nroRandom);
+            listaGanadores.push(ganador) 
+            i = i + 1;
+        } else {
+            nroRandom = getRandomIntInclusive(minimo, maximo);
+            let ganador = namesGiveaway[nroRandom];
+            yaGano.push(nroRandom);
+            listaGanadores.push(ganador) 
+            i = i + 1;
+        }
+    }
+    msgGanadores = `${listaGanadores.map(name => `- ${name}`).join('\n')}`
+    // console.log(listaGanadores);
+    // console.log(msgGanadores);
+    return `${msgGanadores}`;
 }
 
 module.exports = { slashSearch, bsSlash, slashAdd, slashDel };
