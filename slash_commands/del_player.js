@@ -14,13 +14,15 @@ module.exports = {
     async execute(interaction) {
         // Autenticacion
         const rolId = "1017153663015325738";
+        const rol2Id = "936719819842129940";
         const tieneRol = interaction.member.roles.cache.has(rolId);
-        if (tieneRol) {
+        const tieneRol2 = interaction.member.roles.cache.has(rol2Id);
+        if (tieneRol || tieneRol2) {
             const name = interaction.options.getString('nombre');
-            const eliminar = slashDel(name); // Corrección aquí
+            const eliminar = await slashDel(name);  
             await interaction.reply(eliminar);
         } else {
-            await interaction.reply("No tenes acceso"); // Ajusta ephemeral según lo necesites
+            await interaction.reply("No tienes permiso para ejecutar este comando (Solo disponible en el servidor de ArGentiNidad)"); 
         }
     }
 }

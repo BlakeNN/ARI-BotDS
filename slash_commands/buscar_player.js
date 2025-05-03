@@ -15,13 +15,22 @@ module.exports = {
     async execute(interaction) {
         // Autenticacion
         const rolId = "1017153663015325738";
+        const rol2Id = "936719819842129940";
         const tieneRol = interaction.member.roles.cache.has(rolId);
-        if (tieneRol) {
+        const tieneRol2 = interaction.member.roles.cache.has(rol2Id);
+        if (tieneRol || tieneRol2) {
+            // Imprimir el objeto interaction para depurar
+            console.log('Objeto interaction:', interaction.toJSON());
+            // Extraer el nombre de las opciones
             const name = interaction.options.getString('nombre');
-            const resultado = slashSearch([name]);
+            console.log('Nombre extraído:', name);
+            // Llamar a la función slashSearch con el nombre extraído
+            const resultado = await slashSearch(name);
+            console.log('Resultado de slashSearch:', resultado);
+            // Responder al usuario
             await interaction.reply(resultado);
         } else {
-            await interaction.reply("No tienes permiso para ejecutar este comando.");
+            await interaction.reply("No tienes permiso para ejecutar este comando (Solo disponible en el servidor de ArGentiNidad)");
         }
     }
 }
