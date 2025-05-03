@@ -1,11 +1,12 @@
 import { Client, Collection } from 'discord.js';
 import { getNames, saveNames, showAllNames, searchName, addName, deleteName} from './black_list/commands.js';
 import { getPlayersOfBattle } from './battle_log/commands.js';
-import fs from 'fs';
-import path from 'path';
 import { fileURLToPath } from 'url';
 import { readFile } from 'fs/promises';
+import fs from 'fs';
+import path from 'path';
 
+// Crear Cliente
 const client = new Client({
     intents: 3276799,
 })
