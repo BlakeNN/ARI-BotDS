@@ -1,6 +1,5 @@
 import { Client, Collection } from 'discord.js';
-import { getNames, saveNames, showAllNames, searchName, addName, deleteName} from './blackList/commands.js';
-import axios from 'axios';
+import { getNames, saveNames, showAllNames, searchName, addName, deleteName} from './black_list/commands.js';
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
@@ -20,7 +19,6 @@ const __dirname = path.dirname(__filename);
 client.on('error', console.error);
 
 client.on('ready', async () => {
-    //...
     console.log('¡El bot está listo!');
     //SlashCommands - Import 
     client.commands = new Collection();
@@ -31,7 +29,7 @@ client.on('ready', async () => {
             const { command } = await import(`file://${filePath}`);
             client.commands.set(command.data.name, command);
         } catch (err) {
-            console.error(`❌ Error al cargar el comando ${file}: ${err.message}`);
+            console.error(`Error al cargar el comando ${file}: ${err.message}`);
         }
     }
     (async () => {
