@@ -1,8 +1,7 @@
-const { SlashCommandBuilder } = require('discord.js');
-const { slashSearch } = require('../index.js');
-const config = require('../config.json');
+import { SlashCommandBuilder } from 'discord.js';
+import { slashSearch } from '../bot.js';
 
-module.exports = {
+export const command =  {
     // Datos
     data: new SlashCommandBuilder()
         .setName("buscar_player")

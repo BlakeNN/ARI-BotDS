@@ -1,8 +1,7 @@
-const { SlashCommandBuilder } = require('discord.js');
-const Discord = require('discord.js');
-const { bsSlash } = require('../index.js');
+import { SlashCommandBuilder } from 'discord.js';
+import { verBlacklistSlash } from '../bot.js';
 
-module.exports = {
+export const command = {
     //Datos
     data: new SlashCommandBuilder()
         .setName("ver_blacklist")
@@ -16,7 +15,7 @@ module.exports = {
         const tieneRol2 = interaction.member.roles.cache.has(rol2Id);
         if (tieneRol || tieneRol2) {
             try {
-                const msg = await bsSlash(); // Espera la respuesta de la función bsSlash
+                const msg = await verBlacklistSlash(); // Espera la respuesta de la función bsSlash
                 // Envía el mensaje
                 await interaction.reply(msg);
             } catch (error) {

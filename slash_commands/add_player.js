@@ -1,7 +1,7 @@
-const { SlashCommandBuilder } = require('discord.js');
-const { slashAdd } = require('../index.js');
+import { SlashCommandBuilder } from 'discord.js';
+import { slashAdd } from '../bot.js';
 
-module.exports = {
+export const command = {
     // Datos
     data: new SlashCommandBuilder()
         .setName("añadir_player") //obj

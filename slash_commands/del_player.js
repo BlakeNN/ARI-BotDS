@@ -1,7 +1,7 @@
-const { SlashCommandBuilder } = require('discord.js');
-const { slashDel } = require('../index.js');
+import { SlashCommandBuilder } from 'discord.js';
+import { slashDel } from '../bot.js';
 
-module.exports = {
+export const command = {
     // Datos
     data: new SlashCommandBuilder()
         .setName("eliminar_player")

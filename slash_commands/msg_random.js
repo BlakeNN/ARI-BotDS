@@ -1,7 +1,7 @@
-const { SlashCommandBuilder } = require('discord.js');
-const Discord = require('discord.js');
+import { SlashCommandBuilder } from 'discord.js';
+let mensaje = "";
 
-module.exports = {
+export const command = {
     //Datos
     data: new SlashCommandBuilder()
         .setName("msg_random")

@@ -256,7 +256,7 @@ async function slashSearch(nameToSearch) { //$s
     return found ? `${nameToSearch} está en la Blacklist.` : `${nameToSearch} no está en la Blacklist.`;
 }
 
-async function slashAdd(nameToAdd, motivo) { //$blacklist
+async function slashAdd(nameToAdd) { //$blacklist
     const names = await getNames("936708400367169577");
     if (names.includes(nameToAdd.toLowerCase())) {
         return `${nameToAdd} ya está en la Blacklist`;
@@ -348,7 +348,7 @@ function finalizarSorteo(names, ganadores) {
     return `${msgGanadores}`;
 }
 
-const objetivos = [];
+export const objetivos = [];
 // Intervalo para revisar los objetivos
 setInterval(() => {
     const ahora = Date.now();
@@ -370,5 +370,5 @@ async function testeo() {
 function verifCom() {
     return `Commit Realizado con Exito`;
 }
-module.exports = { slashSearch, bsSlash, slashAdd, slashDel, objetivos };
-client.login(config.token);
+module.exports = { slashSearch, bsSlash, slashAdd, slashDel };
+//client.login(config.token);

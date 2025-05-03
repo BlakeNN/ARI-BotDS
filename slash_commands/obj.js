@@ -1,7 +1,7 @@
-const { SlashCommandBuilder } = require('discord.js');
-const { objetivos } = require('../index.js');
+import { SlashCommandBuilder } from 'discord.js';
+import { objetivos } from '../bot.js';
 
-module.exports = {
+export const command = {
     // Datos del comando
     data: new SlashCommandBuilder()
         .setName("obj")
