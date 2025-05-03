@@ -9,8 +9,8 @@ export const command = {
     //Ejecucion
     async execute(interaction) {
         // Autenticacion
-        const rolId = "1017153663015325738";
-        const rol2Id = "936719819842129940";
+        const rolId = "1350534225748820191";
+        const rol2Id = "1350534225748820189";
         const tieneRol = interaction.member.roles.cache.has(rolId);
         const tieneRol2 = interaction.member.roles.cache.has(rol2Id);
         if (tieneRol || tieneRol2) {

@@ -1,5 +1,5 @@
 import { Client, Collection } from 'discord.js';
-import { showAllNames, searchName, addName, deleteName} from './blackList/commands.js';
+import { getNames, saveNames,showAllNames, searchName, addName, deleteName} from './blackList/commands.js';
 import axios from 'axios';
 import fs from 'fs';
 import path from 'path';
