@@ -8,7 +8,7 @@ const gistId = config.gistId;
 const gistFilename = 'nombres.json';
 
 // Función para obtener la lista de nombres desde el Gist
-async function getNames(serverId) {
+export async function getNames(serverId) {
     if (serverId == '936708400367169577') {
         try {
             const response = await axios.get(`https://api.github.com/gists/${gistId}`, {
@@ -28,7 +28,7 @@ async function getNames(serverId) {
 }
 
 // Función para guardar la lista de nombres actualizada en el Gist
-async function saveNames(names, serverId) {
+export async function saveNames(names, serverId) {
     if (serverId == '936708400367169577') {
         try {
             await axios.patch(
