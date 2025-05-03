@@ -1,5 +1,6 @@
 import { Client, Collection } from 'discord.js';
 import { getNames, saveNames, showAllNames, searchName, addName, deleteName} from './black_list/commands.js';
+import { getPlayersOfBattle } from './battle_log/commands.js';
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
@@ -69,6 +70,10 @@ client.on('messageCreate', async (message) => {
         case 'ping':
             console.log('Pong');
             message.channel.send('Pong');
+            break;
+        case 'asist':
+            const peleaId = args.join(' ');
+            await getPlayersOfBattle(message, peleaId);
             break;
         default:
             message.channel.send('Juani es un pelotudo y no codeo tu comando, o lo estas poniendo mal y sos mas pelotudo que Juani');
