@@ -8,3 +8,7 @@ const client = new Client({
 })
 
 // Vars - Consts
+const prefix = '$';
+const tokenGist = config.tokenGist;
+const gistId = config.gistId;
+const gistFilename = 'nombres.json';
