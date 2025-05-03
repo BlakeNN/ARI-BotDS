@@ -1,3 +1,5 @@
+# Modulos
 node_modules
+#Config y .env
 config.json
 discloud.config
