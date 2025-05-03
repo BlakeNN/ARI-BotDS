@@ -73,8 +73,10 @@ client.on('messageCreate', async (message) => {
             message.channel.send('Pong');
             break;
         case 'asist':
-            const peleaId = args.join(' ');
-            await getPlayersOfBattle(message, peleaId);
+            const peleaId = args.shift();
+            const guildName = args.join(' ');
+            console.log("Data: \n", peleaId, "\n", guildName);
+            await getPlayersOfBattle(message, peleaId, guildName);
             break;
         default:
             message.channel.send('Juani es un pelotudo y no codeo tu comando, o lo estas poniendo mal y sos mas pelotudo que Juani');

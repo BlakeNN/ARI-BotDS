@@ -1,12 +1,12 @@
 import axios from "axios";
 
-export async function getPlayersOfBattle(message, battleId) {
+export async function getPlayersOfBattle(message, battleId, guild) {
     try {
         const response = await axios.get(`https://gameinfo.albiononline.com/api/gameinfo/battles/${battleId}`);
         const data = response.data;
         if(data) {
             const playersFiltered = Object.values(data.players)
-            .filter(player => player.guildName === "ArGentiNidad")
+            .filter(player => player.guildName === guild)
             .map(player => player.name);
             let cant = playersFiltered.length
             message.channel.send(`**Asistencia: ${cant} Players**\n${playersFiltered.map(name => `- ${name}`).join('\n')}`);
@@ -16,13 +16,13 @@ export async function getPlayersOfBattle(message, battleId) {
     }
 }
 
-export async function slashGetPlayersOfBattle(battleId) {
+export async function slashGetPlayersOfBattle(battleId, guild) {
     try {
         const response = await axios.get(`https://gameinfo.albiononline.com/api/gameinfo/battles/${battleId}`);
         const data = response.data;
         if (data) {
             const playersFiltered = Object.values(data.players)
-                .filter(player => player.guildName === "ArGentiNidad")
+                .filter(player => player.guildName === guild)
                 .map(player => player.name);
                 return playersFiltered;
             }
