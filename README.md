@@ -1,4 +1,4 @@
-# 🛡️ ARI - Discord Bot
+# ARI - Discord Bot
 
 Un bot de Discord diseñado para una comunidad del juego *Albion Online*, que permite gestionar listas negras de jugadores (blacklist) y obtener información sobre asistencia a eventos del juego, ademas permite programar eventos a modo de *Recordatorio*.
 
@@ -13,16 +13,16 @@ Un bot de Discord diseñado para una comunidad del juego *Albion Online*, que pe
 
 ---
 
-## ✨ Características
+## 📚 Características
 
 - ✅ Gestión de blacklist (agregar, eliminar, buscar, mostrar nombres)
-- 📜 Compatible con Comandos Slash {/}
-- 🧠 Consulta de asistencia a eventos del juego.
-- 🔔 Sistema de Recordatorios Programados para eventos varios.
+- ✅ Compatible con Comandos Slash {/}
+- ✅ Consulta de asistencia a eventos del juego.
+- ✅ Sistema de Recordatorios Programados para eventos varios.
 
 ---
 
-## 📦 Comandos Disponibles
+## </> Comandos Disponibles
 
 ### 🔧 Prefix `$`
 
@@ -33,7 +33,7 @@ Un bot de Discord diseñado para una comunidad del juego *Albion Online*, que pe
 - `$asist <battleId> <nombre de guild>` – Muestra los jugadores de una Guild que asistieron a una batalla específica.
 - `$ping` – Comando para corroborar que el Bot este Online.
 
-### ⚙️ Slash Commands
+### 🔧 Slash Commands
 
 - `/blacklist` – Agrega un nombre a la blacklist.
 - `/del` – Elimina un nombre de la blacklist.
@@ -44,7 +44,7 @@ Un bot de Discord diseñado para una comunidad del juego *Albion Online*, que pe
 
 ---
 
-## ⚙️ Guía de Instalación
+## 🔧 Guía de Instalación
 
 1. **Clona el repositorio**
    ```bash
@@ -77,7 +77,7 @@ Un bot de Discord diseñado para una comunidad del juego *Albion Online*, que pe
 
 ---
 
-## 📄 Licencia
+## 📚 Licencia
 
 Este proyecto está bajo la Licencia MIT.  
 Podés usarlo, modificarlo o distribuirlo libremente con reconocimiento adecuado.  
