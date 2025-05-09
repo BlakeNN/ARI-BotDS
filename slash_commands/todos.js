@@ -8,7 +8,8 @@ export const command = {
     async execute(interaction) {
         const member = interaction.member;
 
-        // Verifica si el usuario está en un canal de voz
+        if(interaction.member.roles.cache.has("1350534225748820191")) {
+            // Verifica si el usuario está en un canal de voz
         if (!member.voice.channel) {
             return await interaction.reply({
                 content: 'Debes estar en un canal de voz para usar este comando.',
@@ -35,5 +36,9 @@ export const command = {
             content: `Todos fueron movidos a **${canalDestino.name}**.`,
             flags: 64 // Ephemeral
         });
+        } else {
+            await interaction.reply("No tienes permiso para ejecutar este comando (Solo con rol de Staff)");
+        }
+        
     }
 };
